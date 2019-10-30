@@ -20,6 +20,12 @@ class ProxyCollector:
         self.countries = None
         self.proxy_set = set()
 
+    def __len__(self):
+        return len(self.proxy_set)
+
+    def __repr__(self):
+        return f'{self.proxy_set}'
+
     def make_session(self):
         headers = {
             'User-Agent': generate_user_agent()
@@ -88,6 +94,5 @@ class ProxyCollector:
 
 p = ProxyCollector()
 p.run()
-print(p.countries)
-print(p.proxy_set)
-print(len(p.proxy_set))
+print(p)
+print(len(p))
