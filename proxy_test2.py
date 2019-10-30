@@ -1,6 +1,19 @@
 import requests
 from concurrent.futures import ProcessPoolExecutor
 from user_agent import generate_user_agent
+'''
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                   Version 2, December 2004
+
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
+
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+ 0. You just DO WHAT THE FUCK YOU WANT TO.
+'''
 
 
 def make_session():
@@ -43,7 +56,7 @@ def get_ip(proxies):
 def run_executor():
     proxy_list = build_proxies_list()
     print(proxy_list)
-    with ProcessPoolExecutor(max_workers=10) as executor:
+    with ProcessPoolExecutor(max_workers=30) as executor:
         executor.map(get_ip, proxy_list)
 
 
