@@ -85,8 +85,8 @@ class ProxyCollector:
             for ip, port in zip(ip_list, port_list):
                 proxy_in_country.append(f'{ip}:{port}')
 
-            print(*self.proxy_set, sep='\n')
             self.proxy_set.update(set(proxy_in_country))
+            print(*self.proxy_set, sep='\n')
 
         else:
             print('not connected')
@@ -95,9 +95,16 @@ class ProxyCollector:
         for _ in map(self.proxy_from_country, self.countries):
             pass
 
+    def write_to_file(self):
+        with open('proxylist', 'a') as f:
+            for proxy in self.proxy_set:
+                f.write(f'{proxy}\n')
+            print('File proxylist populated')
+
     def run(self):
         self.get_countries_list()
         self.build_proxy_set()
+        self.write_to_file()
 
 
 p = ProxyCollector()
