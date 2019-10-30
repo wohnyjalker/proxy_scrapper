@@ -1,0 +1,5 @@
+venv/
+.vscode/
+proxylist
+proxylistzle
+proxy_scrapper.py

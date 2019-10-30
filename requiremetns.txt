@@ -1,0 +1,13 @@
+autopep8==1.4.4
+beautifulsoup4==4.8.1
+certifi==2019.9.11
+chardet==3.0.4
+idna==2.8
+lxml==4.4.1
+pkg-resources==0.0.0
+pycodestyle==2.5.0
+requests==2.22.0
+six==1.12.0
+soupsieve==1.9.4
+urllib3==1.25.6
+user-agent==0.1.9
