@@ -3,3 +3,4 @@ venv/
 proxylist
 proxylistzle
 proxy_scrapper.py
+test/
