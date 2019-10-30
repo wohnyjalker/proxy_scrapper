@@ -9,9 +9,12 @@ class ProxyCollector:
         proxy collector
     '''
 
-    IP_XPATH = '/html/body/center/div/div/div/center/div/table/tbody/tr/td/abbr/script/text()'
-    PORT_XPATH = '/html/body/center/div/div/div/center/div/table/tbody/tr/td/a/@href'
+    # IP_XPATH = '/html/body/center/div/div/div/center/div/table/tbody/tr/td/abbr/script/text()'
+    # PORT_XPATH = '/html/body/center/div/div/div/center/div/table/tbody/tr/td/a/@href'
+    START_URL = 'https://www.proxynova.com/proxy-server-list/country-ar/'
+    IP_XPATH = './/table[@id="tbl_proxy_list"]/tbody/tr/td/abbr/script/text()'
     COUNTRIES_XPATH = './/select[@id="proxy_country"]/option/@value'
+    PORT_XPATH = './/table[@id="tbl_proxy_list"]/tbody/tr/td/a/@href'
 
     COUNTRY_URL = 'https://www.proxynova.com/proxy-server-list/country-{}/'
 
@@ -40,8 +43,7 @@ class ProxyCollector:
         '''
         session = self.session
 
-        response = session.get(
-            'https://www.proxynova.com/proxy-server-list/country-ar/')
+        response = session.get(self.START_URL)
 
         if response.status_code:
             tree = fromstring(response.text)
@@ -59,6 +61,9 @@ class ProxyCollector:
 
     @staticmethod
     def return_ip(silly_protection_or_js) -> Union[str, None]:
+        '''
+            need to be fixed sometimes return '2.23019.21:8080'
+        '''
         _str = silly_protection_or_js[24:29] + silly_protection_or_js[45:-4]
         return _str
 
@@ -69,19 +74,22 @@ class ProxyCollector:
 
         if response.status_code:
             tree = fromstring(response.text)
+
             ip_list = [self.return_ip(x) for x in tree.xpath(self.IP_XPATH)]
+
             port_list = [self.normalize_port(x)
                          for x in tree.xpath(self.PORT_XPATH)]
             port_list = [x for x in port_list if x is not None]
+
+            proxy_in_country = list()
+            for ip, port in zip(ip_list, port_list):
+                proxy_in_country.append(f'{ip}:{port}')
+
+            print(*self.proxy_set, sep='\n')
+            self.proxy_set.update(set(proxy_in_country))
+
         else:
-            print('proxy_from_country error')
-
-        proxy_in_country = list()
-        for ip, port in zip(ip_list, port_list):
-            proxy_in_country.append(f'{ip}:{port}')
-
-        self.proxy_set.update(set(proxy_in_country))
-        print(*self.proxy_set, sep='\n')
+            print('not connected')
 
     def build_proxy_set(self):
         for _ in map(self.proxy_from_country, self.countries):
