@@ -62,7 +62,7 @@ class FreeProxyCollector:
         try:
             response = session.get(
                 url=url, proxies={'http': proxy_ip, 'https': proxy_ip})
-            if response.json()['ip'] != FreeProxyCollector.URL:
+            if response.json()['ip'] != FreeProxyCollector.MY_IP:
                 # print(response.json())
                 print(proxy_ip)
             else:
