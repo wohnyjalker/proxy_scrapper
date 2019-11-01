@@ -11,11 +11,16 @@ class FreeProxyCollector:
     '''
 
     URL = 'https://free-proxy-list.net/'
-    with open('test/my_ip', 'r') as f:
-        MY_IP = f.readline()
+    # with open('test/my_ip', 'r') as f:
+    #     MY_IP = f.readline()
+    response = requests.get('http://api.ipify.org?format=json')
+    if response.status_code:
+        MY_IP = response.json()['ip']
+        print(f'**********Your IP: {MY_IP}**********')
 
     def __init__(self):
         self.session = self.make_session()
+        # self.ip = self.get_my_ip()
         self.proxy_list = set()
         self.valid_proxy_list = set()
 
@@ -51,10 +56,26 @@ class FreeProxyCollector:
 
     def run_executor(self):
         with ProcessPoolExecutor(max_workers=100) as executor:
-            executor.map(FreeProxyCollector.get_ip, self.proxy_list)
+            executor.map(FreeProxyCollector.check_if_secure,
+                         self.proxy_list, timeout=5)
 
     @staticmethod
-    def get_ip(proxy_ip):
+    def get_my_ip():
+        '''
+            return your ip <--- sthing 
+        '''
+        url = 'http://api.ipify.org?format=json'
+        session = FreeProxyCollector.make_session(FreeProxyCollector)
+        response = session.get(url=url)
+        if response.status_code:
+            ip = response.json()['ip']
+            print(f'**********Your IP:{ip}**********')
+            print(type(ip))
+            print(len(ip))
+            return ip
+
+    @staticmethod
+    def check_if_secure(proxy_ip):
         url = 'http://api.ipify.org?format=json'
         session = FreeProxyCollector.make_session(FreeProxyCollector)
         # r = session.get(url)
@@ -65,16 +86,18 @@ class FreeProxyCollector:
             if response.json()['ip'] != FreeProxyCollector.MY_IP:
                 # print(response.json())
                 print(proxy_ip)
-            else:
-                # print('Equal to my ip')
-                return False
+            # else:
+            #     print('Equal to my ip')
+            #     return False
         except requests.exceptions.ProxyError as e:
-            # print('Proxy server error')
-            return False
-        return True
+            pass
+            # print(f'{proxy_ip} server error')
+            #     return False
+            # return True
 
     def run(self):
         self.get_proxy_list()
+        print(f'{len(self)} proxy servers.\nSecure proxy list:')
         self.run_executor()
         # print(self.proxy_list)
 
