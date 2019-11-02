@@ -84,6 +84,8 @@ class ProxyCollector:
             if response.json() != self.ip:
                 if self.verbose:
                     print(f'Response from {proxy_ip} -> {response.json()}')
+                else:
+                    print(proxy_ip)
                 return proxy_ip
             else:
                 if self.verbose:
@@ -116,17 +118,18 @@ class ProxyCollector:
     def run_collector(self):
         start_time = time.time()
         self.get_proxy_list()
+        print(f'{len(self)} proxy servers.')
         if self.verbose:
-            print(f'{len(self)} proxy servers.')
             print('Validating...')
         with ProcessPoolExecutor(max_workers=100) as executor:
             results = executor.map(self.validate_ip, list(
                 self.proxy_set), timeout=15)
 
         self.valid_proxy_set = set([ip for ip in results if ip is not None])
+        print(f'Ther are {len(self.valid_proxy_set)} secure proxy servers')
         self.write_to_file()
         print("Script runtime %s seconds." % (time.time() - start_time))
 
 
-collector = ProxyCollector(verbose=True)
+collector = ProxyCollector(verbose=False)
 collector.run_collector()
