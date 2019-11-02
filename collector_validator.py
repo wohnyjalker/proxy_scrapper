@@ -91,6 +91,8 @@ class ProxyCollector:
                         f'Response {response.json()} so {proxy_ip} is not secure')
                 pass
         except Exception as e:  # <-- to many exceptions to validate
+            if self.verbose:
+                print(f'ERROR:\n{e}')
             pass
         return None
         # except requests.exceptions.ProxyError as e:
@@ -123,8 +125,8 @@ class ProxyCollector:
 
         self.valid_proxy_set = set([ip for ip in results if ip is not None])
         self.write_to_file()
-        print("Script runtime %s seconds ---" % (time.time() - start_time))
+        print("Script runtime %s seconds." % (time.time() - start_time))
 
 
-collector = ProxyCollector()
+collector = ProxyCollector(verbose=True)
 collector.run_collector()
