@@ -63,12 +63,8 @@ class ProxyCollector:
             ip_list = [x for x in tree.xpath('.//tbody/tr/td[1]/text()')]
             port_list = [x for x in tree.xpath('.//tbody/tr/td[2]/text()')]
 
-            output = list()
             for i, p in zip(ip_list, port_list):
-                output.append(f'{i}:{p}')
-
-            self.proxy_set.update(set(output))
-
+                self.proxy_set.add(f'{i}:{p}')
         else:
             print(response.status_code)
 
@@ -119,13 +115,17 @@ class ProxyCollector:
         start_time = time.time()
         self.get_proxy_list()
         print(f'{len(self)} proxy servers.')
+
         if self.verbose:
             print('Validating...')
-        with ProcessPoolExecutor(max_workers=100) as executor:
-            results = executor.map(self.validate_ip, list(
-                self.proxy_set), timeout=15)
 
-        self.valid_proxy_set = set([ip for ip in results if ip is not None])
+        with ProcessPoolExecutor(max_workers=100) as executor:
+            results = executor.map(
+                self.validate_ip,
+                self.proxy_set,
+                timeout=15
+            )
+        self.valid_proxy_set = [ip for ip in results if ip is not None]
         print(f'Ther are {len(self.valid_proxy_set)} secure proxy servers')
         self.write_to_file()
         print("Script runtime %s seconds." % (time.time() - start_time))
