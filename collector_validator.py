@@ -35,7 +35,7 @@ class ProxyCollector:
         self.ip = self.get_ip()
         self.session = self.make_session()
         self.proxy_set = set()
-        self.valid_proxy_set = set()
+        self.valid_proxy_list = list()
 
     def __len__(self):
         return len(self.proxy_set)
@@ -102,7 +102,7 @@ class ProxyCollector:
 
     def write_to_file(self):
         with open('valid_proxy_list.txt', 'w') as f:
-            f.write('\n'.join(self.valid_proxy_set))
+            f.write('\n'.join(self.valid_proxy_list))
             print('valid_proxy_list.txt created.')
 
     def run(self):
@@ -125,8 +125,8 @@ class ProxyCollector:
                 self.proxy_set,
                 timeout=15
             )
-        self.valid_proxy_set = [ip for ip in results if ip is not None]
-        print(f'Ther are {len(self.valid_proxy_set)} secure proxy servers')
+        self.valid_proxy_list = [ip for ip in results if ip is not None]
+        print(f'Ther are {len(self.valid_proxy_list)} secure proxy servers')
         self.write_to_file()
         print("Script runtime %s seconds." % (time.time() - start_time))
 
